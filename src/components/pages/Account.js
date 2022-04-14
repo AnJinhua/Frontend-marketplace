@@ -9,6 +9,7 @@ import api from "../../core/api";
 import { connectWallet, getCurrentWalletConnected, } from "../../core/nft/interact";
 import NftCardAuthor from '../components/NftCardAuthor';
 import auth from '../../core/auth';
+import { navigate } from '@reach/router';
 // import NftMusicCard from '../components/NftMusicCard';
 
 import axios from 'axios'
@@ -73,9 +74,23 @@ const authorsState = useSelector(selectors.authorsState);
 const author = authorsState.data ? authorsState.data[0] : {};
 
 useEffect(() => {
-  dispatch(fetchAuthorList(authorId));
+  
+  async function getExistingWallet() {
+    const { address, status } = await getCurrentWalletConnected();
+    if(address.length == 0) {
+      <Redirect from="" to="/" noThrow />
+    }
+        
+    const userinfomation = auth.getUserInfo();    
+    if(userinfomation) {
+      const userauthid = userinfomation[0].id;
+      dispatch(fetchAuthorList(userauthid));
+    }    
+  }
+
+  getExistingWallet();
   loadNFTs();
-}, [dispatch, authorId]);
+}, []);
 
 async function loadNFTs() {
   const web3Modal = new Web3Modal({
@@ -124,9 +139,8 @@ async function loadNFTs() {
   }
 }
 
-function listNFT(nft) {
-  // console.log('nft:', nft)
-  router.push(`/nft-demo/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`)
+const navigateTo = (link) => {
+  navigate(link);
 }
 
 console.log(nfts);
@@ -192,7 +206,42 @@ return (
       )}
       {openMenu1 && ( 
         <div id='zero2' className='onStep fadeIn'>
-         <ColumnNewAuthor shuffle showLoadMore={false} authorId={author.id}/>
+          <div className='row'>
+              {/* {nfts && nfts.map( (nft, i) => (
+                  nft.category === 'music' ?
+                  <NftMusicCard nft={nft} audioUrl={nft.audio_url} key={i} onImgLoad={onImgLoad} height={height} />
+                  :
+                  <NftCardAuthor nft={nft} key={i} />
+              ))} */}
+              {
+            nfts.map((nft, i) => (
+              <div className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4">
+                <div key={i} className="nft__item m-0">
+                  <div className="nft__item_wrap">
+                    <img src={nft.image} className="rounded" />
+                  </div>                  
+                  <div className="nft__item_info">      
+                    <span onClick={() => navigateTo(`/ItemDetail/${nft.id}`)}>
+                        <h4>Item {nft.tokenId}</h4>
+                        <p>Item {nft.tokenId}</p>
+                    </span>              
+                    <div className="nft__item_price"><h4>Price</h4>{nft.price} ETH</div>
+                    {/* <button className="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => listNFT(nft)}>List</button> */}
+                    <div className="nft__item_action"><span onClick={() => navigateTo(`/ItemDetail/${nft.tokenId}`)}>Buy Now</span></div>
+                    <div className="nft__item_like"><i className="fa fa-heart"></i><span>0</span></div>
+                  </div>
+                </div>
+              </div>
+              
+            ))
+          }
+              {/* { nfts.length <= 20 &&
+                  <div className='col-lg-12'>
+                      <div className="spacer-single"></div>
+                      <span onClick={loadMore} className="btn-main lead m-auto">Load More</span>
+                  </div>
+              } */}
+          </div>  
         </div>
       )}
       {openMenu2 && ( 

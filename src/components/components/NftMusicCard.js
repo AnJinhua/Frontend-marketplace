@@ -75,8 +75,10 @@ const NftMusicCard = ({ nft, audioUrl, className = 'd-item col-lg-3 col-md-6 col
                 <div className="nft__item_info">
                     <span onClick={() => navigateTo(`${nft.nft_link}/${nft.id}`)}>
                         <h4>{nft.title}</h4>
+                        <p>{nft.title}</p>
                     </span>
                     <div className="nft__item_price">
+                        <h4>Price</h4>
                         {nft.price} ETH
                         <span>{nft.bid}/{nft.max_bid}</span>
                     </div>

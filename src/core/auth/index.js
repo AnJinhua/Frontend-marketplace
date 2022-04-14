@@ -3,6 +3,7 @@ import api from '../api';
 
 const TOKEN_KEY = 'jwtToken';
 const USER_INFO = 'userInfo';
+const Wallet = 'wallet';
 
 const parse = JSON.parse;
 const stringify = JSON.stringify;
@@ -41,6 +42,10 @@ const auth = {
     return auth.clear(tokenKey);
   },
 
+  clearWallet(wallet = Wallet) {
+    return auth.clear(wallet);
+  },
+
   clearUserInfo(userInfo = USER_INFO) {
     return auth.clear(userInfo);
   },
@@ -64,6 +69,10 @@ const auth = {
 
   getToken(tokenKey = TOKEN_KEY) {
     return auth.get(tokenKey);
+  },
+
+  getWallet(wallet = Wallet) {
+    return auth.get(wallet);
   },
 
   getUserInfo(userInfo = USER_INFO) {
@@ -96,6 +105,10 @@ const auth = {
     return auth.set(value, tokenKey, isLocalStorage);
   },
 
+  setWallet(value = '', isLocalStorage = false, wallet = Wallet) {
+    return auth.set(value, wallet, isLocalStorage);
+  },
+
   setUserInfo(value = '', isLocalStorage = false, userInfo = USER_INFO) {
     return auth.set(value, userInfo, isLocalStorage);
   },
@@ -103,6 +116,8 @@ const auth = {
 
 export const loginUrl = `${api.baseUrl}/auth/local`;
 export const registerUrl = `${api.baseUrl}/auth/local/register`;
+export const authorCreatorUrl = `${api.baseUrl}/authors`;
 export const authorUrl = (authorId) => `${api.baseUrl}/authors/${authorId}`;
+export const authorWalletUrl = (wallet) => `${api.baseUrl}/authors/?wallet=${wallet}`;
 
 export default auth;

@@ -73,7 +73,7 @@ const Profile = ({ authorId }) => {
         await request(requestURL, { method: 'PUT', body: data})
         .then((response) => {
             console.log(response)
-            redirectUser(`/Author/${authorId}`);
+            redirectUser(`/account`);
         }).catch((err) => {
             console.log(err);
         });
@@ -92,12 +92,12 @@ const Profile = ({ authorId }) => {
             method: 'post',
             url : `${api.baseUrl}/upload`,
             data: formData,
-            headers: {
-                Authorization: `Bearer ${jwt}`,
-                "Content-Type": "multipart/form-data"
-            }
+            // headers: {
+            //     Authorization: `Bearer ${jwt}`,
+            //     "Content-Type": "multipart/form-data"
+            // }
         }).then(res => {
-            redirectUser(`/Author/${authorId}`);
+            redirectUser(`/account`);
             console.log(res);
         }).catch(err => {
             console.log(err)

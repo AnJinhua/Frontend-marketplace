@@ -3,7 +3,8 @@ import Breakpoint, { BreakpointProvider, setDefaultBreakpoints } from "react-soc
 //import { header } from 'react-bootstrap';
 import { Link } from '@reach/router';
 import useOnclickOutside from "react-cool-onclickoutside";
-import auth from '../../core/auth';
+import auth, { authorWalletUrl, authorCreatorUrl } from '../../core/auth';
+import request from '../../core/auth/request';
 import { navigate } from '@reach/router';
 import { connectWallet, getCurrentWalletConnected, } from "../../core/nft/interact";
 
@@ -37,6 +38,8 @@ const Header = function({ className }) {
     const [openMenu3, setOpenMenu3] = React.useState(false);
     
     const [walletAddress, setWallet] = useState("");
+    const [authusername, setauthusername] = useState("");
+    const [authuserid, setauthuserid] = useState("");
     const [status, setStatus] = useState("");
 
     const handleBtnClick = () => {
@@ -103,6 +106,15 @@ const Header = function({ className }) {
     const header = document.getElementById("myHeader");
     const totop = document.getElementById("scroll-to-top");
     const sticky = header.offsetTop;
+
+    const authUserinformation = auth.getUserInfo();
+    console.log(authUserinformation);
+    if (authUserinformation) {
+      setWallet(authUserinformation[0].wallet);
+      setauthusername(authUserinformation[0].username)
+      setauthuserid(authUserinformation[0].id)
+    }    
+    
     const scrollCallBack = window.addEventListener("scroll", () => {
         btn_icon(false);
         if (window.pageYOffset > sticky) {
@@ -161,7 +173,38 @@ const Header = function({ className }) {
     const connectWalletPressed = async () => {
       const walletResponse = await connectWallet();
       setStatus(walletResponse.status);
-      setWallet(walletResponse.address);
+      setWallet(walletResponse.address);      
+      const authwalletaddress =  walletResponse.address;
+      // const authwalletaddress = walletResponse.address.replace('0x','');
+
+      const requestURL = authorWalletUrl(authwalletaddress);         
+      await request(requestURL, { method: 'GET'})
+      .then((response) => {
+          
+          if(response.length > 0) {            
+            auth.setUserInfo(response, false);
+            console.log(response);
+            setauthusername(response[0].username)
+            setauthuserid(response[0].id)
+          } else {
+
+              const data = {username: authwalletaddress, social: '', wallet: authwalletaddress, followers: 0};
+              const registerauthURL = authorCreatorUrl; 
+              request(registerauthURL, { method: 'POST', body: data})
+              .then((response) => {
+                console.log(response)
+                auth.setToken(response.jwt, false);                
+                auth.setUserInfo(response.user, false);
+                redirectUser('/Profile/' + response.id);
+              }).catch((err) => {
+                console.log(err);
+              });              
+
+          }
+          // redirectUser(`/Author/${authorId}`);
+      }).catch((err) => {
+          console.log(err);
+      });
     };
 
 
@@ -355,7 +398,7 @@ const Header = function({ className }) {
                             <div className='item-dropdown'>
                               <div className="dropdown" onClick={closeMenu1}>
                               <NavLink to="/explore">Explore</NavLink>
-                              <NavLink to="/exploreOpensea">Explore OpenSea</NavLink>
+                              <NavLink to="/assets">Explore Items</NavLink>
                               <NavLink to="/rangking">Rangking</NavLink>                              
                               <NavLink to="/colection/1">Collection</NavLink>                              
                               <NavLink to="/ItemDetail/1">Items Details</NavLink>                              
@@ -452,7 +495,7 @@ const Header = function({ className }) {
                 )}
                 {walletAddress.length > 0 && (
                 <div className="logout">
-                  <NavLink to="/createOptions">Create</NavLink>
+                  <NavLink to="/create2">Create</NavLink>
                   <div id="de-click-menu-notification" className="de-menu-notification" onClick={() => btn_icon_not(!shownot)} ref={refpopnot}>
                       <div className="d-count">8</div>
                       <i className="fa fa-bell"></i>
@@ -517,28 +560,28 @@ const Header = function({ className }) {
                       {showpop && 
                         <div className="popshow">
                           <div className="d-name">
-                              <h4>Monica Lucas</h4>
+                              <h4>{authusername}</h4>
                               <span className="name" onClick={()=> window.open("", "_self")}>Set display name</span>
                           </div>
-                          <div className="d-balance">
+                          {/* <div className="d-balance">
                               <h4>Balance</h4>
                               12.858 ETH
-                          </div>
+                          </div> */}
                           <div className="d-wallet">
                               <h4>My Wallet</h4>
-                              <span id="wallet" className="d-wallet-address">DdzFFzCqrhshMSxb9oW3mRo4MJrQkusV3fGFSTwaiu4wPBqMryA9DYVJCkW9n7twCffG5f5wX2sSkoDXGiZB1HPa7K7f865Kk4LqnrME</span>
+                              <span id="wallet" className="d-wallet-address">{walletAddress}</span>
                               <button id="btn_copy" title="Copy Text">Copy</button>
                           </div>
                           <div className="d-line"></div>
                           <ul className="de-submenu-profile">
                             <li>
                               <span>                                   
-                                  <a href='/Author/1' style={{ padding: 0, background: "#ffffff", boxShadow: "none"}}><i className="fa fa-user" style={{ color: '#0d0c22' }}></i> <font style={{ color: '#0d0c22' }}>My profile</font></a>                                                          
+                                  <a href='/account' style={{ padding: 0, background: "#ffffff", boxShadow: "none"}}><i className="fa fa-user" style={{ color: '#0d0c22' }}></i> <font style={{ color: '#0d0c22' }}>My profile</font></a>                                                          
                               </span>
                             </li>
                             <li>
                               <span>                              
-                                  <a href='/Profile/1' style={{ padding: 0, background: "#ffffff", boxShadow: "none"}}><i className="fa fa-pencil" style={{ color: '#0d0c22' }}></i> <font style={{ color: '#0d0c22' }}>Edit profile</font></a>                              
+                                  <a href={'/Profile/' + authuserid} style={{ padding: 0, background: "#ffffff", boxShadow: "none"}}><i className="fa fa-pencil" style={{ color: '#0d0c22' }}></i> <font style={{ color: '#0d0c22' }}>Edit profile</font></a>                              
                               </span>
                             </li>
                             <li onClick={handleLogout}>

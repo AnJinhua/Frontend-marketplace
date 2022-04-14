@@ -30,6 +30,8 @@ import Colectiongrey from './pages/colectionGrey';
 import ItemDetailRedux from './pages/ItemDetailRedux';
 import ItemDetailReduxgrey from './pages/ItemDetailReduxGrey';
 import Author from './pages/Author';
+import Account from './pages/Account';
+import Assets from './pages/Assets';
 import AuthorGrey from './pages/AuthorGrey';
 import AuthorOpensea from './pages/Opensea/author';
 import Wallet from './pages/wallet';
@@ -137,8 +139,10 @@ const app= () => (
           PROTECTED ROUTE :
           you can use this to protect your route, user must login first to access
          */}
-        <ProtectedRoute component={Author} path="/Author/:authorId"/>
-        <ProtectedRoute component={Profile} path="/Profile/:authorId"/>
+        <Account component={Account} path="/account"/>
+        <Assets component={Assets} path="/assets"/>
+        <Profile component={Profile} path="/Profile/:authorId"/>
+        <Author component={Author} path="/Author/:authorId" /> 
         {/* 
         <Author path="/Author/:authorId" /> 
         */}

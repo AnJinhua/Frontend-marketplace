@@ -2731,10 +2731,12 @@ i.font60 {
     font-size: 15px;
     margin-bottom: 5px;
 }
-.nft__item_price {
+.nft__item_price, .has_offers {
     font-size: 14px;
     font-weight: 600;
     display: block;
+    float: right;
+    margin-top: -65px;
 }
 .nft__item_price span {
     margin-left: 10px;
@@ -2743,9 +2745,12 @@ i.font60 {
 }
 .nft__item_action {
     font-size: 14px;
+    margin-top: 15px;
     span{
-      font-weight: bold;
-      color: $color;
+      background: #28a9c6;
+      color: #ffffff;
+      padding: 7px 16px;
+      border-radius: 15px;
     }
 }
 .nft__item_like {
@@ -2754,10 +2759,16 @@ i.font60 {
     font-size: 14px;
     color: #ddd;
     float: right;
+    i {
+      background: #28a9c6;
+      padding: 7px;
+      border-radius: 50%;
+      fill: #ffffff;
+    }
     span {
-      color: $gray;
-      margin-left: 5px;
-      font-size: 12px;
+      color: #000000;
+      margin-left: 10px;
+      font-size: 14px;
     }
     &:hover i {
     color: pink;

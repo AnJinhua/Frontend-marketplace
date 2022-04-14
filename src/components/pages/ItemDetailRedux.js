@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import Clock from "../components/Clock";
 import Footer from '../components/footer';
@@ -12,6 +12,12 @@ import moment from "moment";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+
+import { ethers } from 'ethers'
+import axios from 'axios'
+import Web3Modal from 'web3modal'
+import { nftmarketaddress } from '../config'
+import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
@@ -46,6 +52,8 @@ const ItemDetailRedux = ({ nftId }) => {
     const [openMenu0, setOpenMenu0] = React.useState(true);
     const [openMenu, setOpenMenu] = React.useState(false);
     const [openMenu1, setOpenMenu1] = React.useState(false);    
+    const [nfts, setNfts] = useState([])
+    const [loadingState, setLoadingState] = useState('not-loaded')
 
     const dispatch = useDispatch();
     const nftDetailState = useSelector(selectors.nftDetailState);
@@ -56,8 +64,82 @@ const ItemDetailRedux = ({ nftId }) => {
 
     useEffect(() => {
         dispatch(fetchNftDetail(nftId));
+        loadNFTs();
     }, [dispatch, nftId]);
 
+    async function loadNFTs() {        
+        const provider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com")                
+        const contract = new ethers.Contract(nftmarketaddress, Market.abi, provider)        
+    
+        let data = null
+        try {
+          data = await contract.fetchMarketItems()          
+        } catch (error) {          
+          return (error || 'Error contract.fetchMarketItems')
+        }
+
+        try {
+          const items = await Promise.all(data.map(async (i) => {
+            const tokenUri = await contract.tokenURI(i.id)
+            const meta = await axios.get(tokenUri)
+            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
+            const item = {
+              price,
+              id: i.id.toNumber(),
+              seller: i.seller,
+              owner: i.owner,
+              image: meta.data.image,
+              name: meta.data.name,
+              description: meta.data.description,
+            }
+            return item
+          }))
+          setNfts(items)
+          setLoadingState('loaded')          
+        } catch (error) {          
+          setLoadingState('loaded')
+          return (error || 'Error get NFT List')
+        }
+    }
+
+    async function buyNft(nft) {
+        /* needs the user to sign the transaction, so will use Web3Provider and sign it */
+        const web3Modal = new Web3Modal()
+    
+        let connection = null
+        try {
+          connection = await web3Modal.connect()          
+        } catch (error) {          
+          return (error || 'Error Connection')
+        }
+    
+        const provider = new ethers.providers.Web3Provider(connection)    
+        const signer = provider.getSigner()        
+        const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)        
+        const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')   
+        console.log("price--" + price) 
+             
+        let transaction = null
+        try {
+          transaction = await contract.createMarketSale(nft.id, {
+            value: price
+          });   
+          console.log(transaction);        
+        } catch (error) {   
+            console.log(error);         
+          return (error || 'Error transaction')
+        }
+        
+    
+        try {
+          await transaction.wait()
+          loadNFTs()          
+        } catch (error) {          
+          return (error || 'Error transaction.wait')
+        }
+      }
+      
+console.log(nft);
     return (
         <div>
         <GlobalStyles/>
@@ -257,7 +339,7 @@ const ItemDetailRedux = ({ nftId }) => {
 
                                 {/* button for checkout */}
                                 <div className="d-flex flex-row mt-5">
-                                    <button className='btn-main lead mb-5 mr15' onClick={() => setOpenCheckout(true)}>Buy</button>
+                                    <button className='btn-main lead mb-5 mr15' onClick={() => buyNft(nft)} >Buy</button>
                                 </div>
 
                                 <Accordion defaultActiveKey="0" className="mt-5">

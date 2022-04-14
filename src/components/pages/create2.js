@@ -6,6 +6,7 @@ import {nftaddress, nftmarketaddress} from '../config'
 import Clock from "../components/Clock"
 import Footer from '../components/footer'
 import { createGlobalStyle } from 'styled-components'
+import { navigate } from '@reach/router';
 
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../artifacts/contracts/Market.sol/NFTMarket.json'
@@ -63,6 +64,11 @@ export default function CreateItem() {
       console.log('Error uploading file: ', error)
     }  
   }
+
+  const redirectUser = (path) => {
+    navigate(path);
+  }
+
   async function createMarket() {
     const { name, description, price, royalties } = formInput
     if (!name || !description || !royalties || !price || !fileUrl) return
@@ -80,29 +86,58 @@ export default function CreateItem() {
     }  
   }
 
-  async function createSale(url) {
+  async function createSale(url) {    
     const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)    
+    let connection = null
+    try {
+      connection = await web3Modal.connect()      
+    } catch (error) {
+      toast.error(error || 'Error on web3Modal Connect')      
+    }
+    if (!connection) return
+    // const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection)        
     const signer = provider.getSigner()
     
-    /* next, create the item */
-    let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
-    let transaction = await contract.createToken(url)
-    let tx = await transaction.wait()
-    let event = tx.events[0]
-    let value = event.args[2]
-    let tokenId = value.toNumber()
+    // /* next, create the item */
+    // let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    // let transaction = await contract.createToken(url)
+    // let tx = await transaction.wait()
+    // let event = tx.events[0]
+    // let value = event.args[2]
+    // let tokenId = value.toNumber()
 
-    const price = ethers.utils.parseUnits(formInput.price, 'ether')
-  
+    const price = ethers.utils.parseUnits(formInput.price, 'ether')    
     /* then list the item for sale on the marketplace */
-    contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
-    let listingPrice = await contract.getListingPrice()
-    listingPrice = listingPrice.toString()
+    const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)        
+    
+    let listingPrice = null
+    try {
+      listingPrice = await contract.getListingPrice()
+      listingPrice = listingPrice.toString()          
+    } catch (error) {           
+      toast.error(error || 'Error on getListingPrice')
+    }
+    if (!listingPrice) return
 
-    transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice })
-    await transaction.wait()    
+    let transaction = null
+    try {
+      transaction = await contract.createToken(url, price, { value: listingPrice })          
+    } catch (error) {          
+      toast.error(error?.data?.message || 'Error while creating token')
+    }
+
+    if (!transaction) return
+    try {
+      await transaction.wait()         
+    } catch (error) {         
+      toast.error(error || 'Error while transaction.wait')
+    }
+
+    console.log(transaction);
+    redirectUser(`/account`);
+    // transaction = await contract.createMarketItem(nftaddress, tokenId, price, { value: listingPrice })
+    // await transaction.wait()    
   }
 
   const [status, setStatus] = useState("");
@@ -188,15 +223,15 @@ export default function CreateItem() {
                                 <div className="de_tab_content pt-3">
                           
                                   <div id="tab_opt_1">
-                                        <h5>Price</h5>
-                                        <input type="text" name="item_price" id="item_price" className="form-control" placeholder="enter price for one item (ETH)" />
+                                        {/* <h5>Price</h5>
+                                        <input type="text" name="item_price" id="item_price" className="form-control" placeholder="enter price for one item (ETH)" /> */}
                                   </div>
 
                                     <div id="tab_opt_2" className='hide'>
-                                        <h5>Minimum bid</h5>
+                                        {/* <h5>Minimum bid</h5>
                                         <input type="text" name="item_price_bid" id="item_price_bid" className="form-control" placeholder="enter minimum bid" />
 
-                                        <div className="spacer-20"></div>
+                                        <div className="spacer-20"></div> */}
 
                                         <div className="row">
                                             <div className="col-md-6">
@@ -217,7 +252,7 @@ export default function CreateItem() {
 
                             </div>
 
-                            <div className="spacer-20"></div>
+                            {/* <div className="spacer-20"></div>
 
                             <div className="switch-with-title">
                                 <h5><i className="fa fa- fa-unlock-alt id-color-2 mr10"></i>Unlock once purchased</h5>
@@ -237,7 +272,7 @@ export default function CreateItem() {
                                     <input type="text" name="item_unlock" id="item_unlock" className="form-control" placeholder="Access key, code to redeem or link to a file..." />             
                                 </div>
                                 : null }
-                            </div>
+                            </div> */}
 
                           <h5>Title</h5>
                           <input type="text" onChange={e => updateFormInput({ ...formInput, name: e.target.value })} className="form-control" placeholder="e.g. 'Crypto Funk" />
