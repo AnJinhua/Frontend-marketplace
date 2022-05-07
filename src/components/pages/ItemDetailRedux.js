@@ -50,8 +50,10 @@ const GlobalStyles = createGlobalStyle`
 const ItemDetailRedux = ({ nftId }) => {
 
     const [openMenu0, setOpenMenu0] = React.useState(true);
-    const [openMenu, setOpenMenu] = React.useState(false);
-    const [openMenu1, setOpenMenu1] = React.useState(false);    
+    const [nfttitle, setNftTitle] = React.useState(false);
+    const [nftdesc, setNftDesc] = React.useState(false);  
+    const [nftimage, setNftImage] = React.useState(false);    
+    const [nftprice, setNftPrice] = React.useState(false);    
     const [nfts, setNfts] = useState([])
     const [loadingState, setLoadingState] = useState('not-loaded')
 
@@ -64,42 +66,49 @@ const ItemDetailRedux = ({ nftId }) => {
 
     useEffect(() => {
         dispatch(fetchNftDetail(nftId));
-        loadNFTs();
+        loadNFTs(nftId);
     }, [dispatch, nftId]);
 
-    async function loadNFTs() {        
-        const provider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com")                
+    async function loadNFTs(nftId) {        
+        const provider = new ethers.providers.JsonRpcProvider("https://matic-mumbai.chainstacklabs.com")                
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, provider)        
     
         let data = null
         try {
-          data = await contract.fetchMarketItems()          
+          data = await contract.fetchItemProperty(nftId)          
         } catch (error) {          
           return (error || 'Error contract.fetchMarketItems')
-        }
-
-        try {
-          const items = await Promise.all(data.map(async (i) => {
-            const tokenUri = await contract.tokenURI(i.id)
-            const meta = await axios.get(tokenUri)
-            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-            const item = {
-              price,
-              id: i.id.toNumber(),
-              seller: i.seller,
-              owner: i.owner,
-              image: meta.data.image,
-              name: meta.data.name,
-              description: meta.data.description,
-            }
-            return item
-          }))
-          setNfts(items)
-          setLoadingState('loaded')          
-        } catch (error) {          
-          setLoadingState('loaded')
-          return (error || 'Error get NFT List')
-        }
+        }        
+                console.log("data===" + data);
+        const response = await axios.get(data.toString().split(',')[1]);      
+        setNftTitle(response.data.name)
+        setNftDesc(response.data.description)  
+        setNftImage(response.data.image) 
+        const nftprice_value = data.toString().split(',')[7] / 1000000000000000000;
+        setNftPrice(nftprice_value)          
+        
+        // try {
+        //   const items = await Promise.all(data.map(async (i) => {
+        //     const tokenUri = await contract.tokenURI(i.id)
+        //     const meta = await axios.get(tokenUri)
+        //     const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
+        //     const item = {
+        //       price,
+        //       id: i.id.toNumber(),
+        //       seller: i.seller,
+        //       owner: i.owner,
+        //       image: meta.data.image,
+        //       name: meta.data.name,
+        //       description: meta.data.description,
+        //     }
+        //     return item
+        //   }))
+        //   setNfts(items)
+        //   setLoadingState('loaded')          
+        // } catch (error) {          
+        //   setLoadingState('loaded')
+        //   return (error || 'Error get NFT List')
+        // }
     }
 
     async function buyNft(nft) {
@@ -116,7 +125,7 @@ const ItemDetailRedux = ({ nftId }) => {
         const provider = new ethers.providers.Web3Provider(connection)    
         const signer = provider.getSigner()        
         const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)        
-        const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')   
+        const price = ethers.utils.parseUnits(nftprice.toString(), 'ether')   
         console.log("price--" + price) 
              
         let transaction = null
@@ -133,13 +142,15 @@ const ItemDetailRedux = ({ nftId }) => {
     
         try {
           await transaction.wait()
-          loadNFTs()          
+          loadNFTs(nftId)          
         } catch (error) {          
           return (error || 'Error transaction.wait')
         }
-      }
-      
-console.log(nft);
+    }
+     
+    loadNFTs(nftId);
+    // console.log(nft);
+
     return (
         <div>
         <GlobalStyles/>
@@ -147,7 +158,7 @@ console.log(nft);
                 <div className='row mt-md-5 pt-md-4'>
                     <div className="col-md-6 text-center">
 
-                        <img src={ nft.preview_image && api.baseUrl + nft.preview_image.url} className="img-fluid img-rounded mb-sm-30" alt=""/>
+                        <img src={ nftimage } className="img-fluid img-rounded mb-sm-30" alt=""/>
                         
                         <Accordion defaultActiveKey="0" className="mt-5">
                             <Card>
@@ -271,15 +282,16 @@ console.log(nft);
                                     </div>
                                 </>
                             }
-                            <h2>{nft.title}</h2>
-                            <div className="item_info_counts">
+                            <h2>{nfttitle}</h2>
+                            {/* <div className="item_info_counts">
                                 <div className="item_info_type"><i className="fa fa-image"></i>{nft.category}</div>
                                 <div className="item_info_views"><i className="fa fa-eye"></i>{nft.views}</div>
                                 <div className="item_info_like"><i className="fa fa-heart"></i>{nft.likes}</div>
-                            </div>
-                            <p>{nft.description}</p>
+                            </div> */}
+                            <h4 style={{color: "#28A9C6"}}>Description</h4>
+                            <p>{nftdesc}</p>
 
-                            <div className="d-flex flex-row">
+                            {/* <div className="d-flex flex-row">
                                 <div className="mr40">
                                     <h6>Creator</h6>
                                     <div className="item_author">                                    
@@ -308,13 +320,28 @@ console.log(nft);
                                         </div>
                                     </div>
                                 </div>
+                            </div> */}
+
+                            <div className="contractinformation">
+                                <div className="inner">
+                                    <h4>Contact Address:</h4>
+                                    <p>0x732D312F9f0fA...</p>
+                                </div>
+                                <div className="inner">
+                                    <h4>Token ID:</h4>
+                                    <p>{nftId}</p>
+                                </div>
+                                <div className="inner">
+                                    <h4>Blockchain:</h4>
+                                    <p>Polygon</p>
+                                </div>
                             </div>
 
                             <div className="spacer-40"></div>
 
                             <div className="de_tab">                          
            
-                                {openMenu0  && (  
+                                {/* {openMenu0  && (  
                                 <div className="tab-1 onStep fadeIn">
                                     <div className="d-block mb-3">
                                         <div className="mr40">
@@ -334,11 +361,13 @@ console.log(nft);
 
                                     </div>
                                 </div>
-                                )}                                
+                                )}                                 */}
 
 
                                 {/* button for checkout */}
-                                <div className="d-flex flex-row mt-5">
+                                
+                                <div className="d-flex flex-row itemdetailprice">
+                                    <div><span>Price:  </span>  <h2>{nftprice}</h2></div>
                                     <button className='btn-main lead mb-5 mr15' onClick={() => buyNft(nft)} >Buy</button>
                                 </div>
 

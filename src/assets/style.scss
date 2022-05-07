@@ -106,6 +106,133 @@ section{
   }
 }
 
+.homenewitems {
+  background: #f2f2f2;
+}
+.frontendnewitem {
+  position: relative !important;
+  display: block !important;
+  margin-bottom: 10px;
+}
+.frontendnewimage {
+  margin: 0px !important;  
+}
+.slick-prev {
+  top: 105% !important;
+  left: 45% !important;
+  width: 55px !important;
+  height: 40px !important;
+}
+.slick-next {
+  top: 105% !important;
+  right: 45% !important;
+  width: 55px !important;
+  height: 40px !important;
+}
+.slick-prev::before, .slick-next::before {
+  border-radius: 20px !important;  
+  width: 55px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+}
+.firstpagetoplist li {
+  margin-bottom: 15px;
+  background: #f2f2f2;
+  padding: 20px;
+  max-width: 320px;
+  list-style: none;
+}
+.firstpagetoplist li:hover {
+  background: #28a9c6;  
+  span {
+    color: #ffffff;
+  }
+}
+.footerguidelist {
+  text-align: center;
+  margin-top: 35px;
+  h3 {
+    margin-top: 20px;
+    font-size: 21px;
+  }
+}
+.homepagecollection {
+  .slick-prev {
+    top: -50px !important;
+    right: 70px !important;
+    left: auto !important;
+  }
+  .slick-next {
+    top: -50px !important;
+    right: 0px !important;
+  }
+}
+.herobannerimg {
+  margin: 45px;
+  background: #E57FCC;
+  padding: 20px;
+  h3 {
+    color: #ffffff;
+  }
+  .img-fluid {
+    border: 3px solid #ffffff;
+    margin-bottom: 15px;
+  }
+}
+.herobannerbtnsection {
+  display: inline-block;
+  margin-right: 20px;
+  span {
+    padding: 11px 35px;
+    font-size: 16px;
+  }   
+  .ndbtnhero {
+    color: #28a9c6 !important;
+    background: #ffffff;
+    border: 1px solid #28a9c6;
+  } 
+}
+.heronftbtnsection {
+  display: inline-block;
+  margin-right: 20px;
+  span {
+    padding: 11px 35px;
+    font-size: 16px;
+    color: #E57FCC !important;
+    background: #ffffff;
+  }   
+  .ndbtnhero {
+    color: #ffffff !important;
+    background: transparent;
+    border: 1px solid #ffffff;
+  } 
+}
+.contractinformation {
+  border: 1px solid #5D5D5D;
+  border-radius: 18px;
+  background: #E5E5E5;
+  padding: 25px 30px 15px 30px;
+  .inner {
+    display: flow-root;
+    margin-bottom: 10px;
+    h4 {
+      display: inline-block;
+      color: #28a9c6;
+      float: left;
+    }
+    p {
+      display: inline-block;
+      float: right;
+    }
+  }
+}
+.itemdetailprice {
+  margin-top: 10px;
+  div { display: inline-flex; }
+  h2 { color: #28a9c6; margin: -10px 0px 0px 15px; }
+  button { margin-left: auto; }
+}
+
 .wraper{
   padding: 0;
   display: block;
@@ -2736,7 +2863,7 @@ i.font60 {
     font-weight: 600;
     display: block;
     float: right;
-    margin-top: -65px;
+    margin-top: -60px;
 }
 .nft__item_price span {
     margin-left: 10px;
@@ -2916,8 +3043,7 @@ i.font60 {
       cursor: pointer;
       color: $black;
     }
-    .bot{
-        color: $gray;
+    .bot{        
         display: block;
         font-size: 14px;
         font-weight: 400;

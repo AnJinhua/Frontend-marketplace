@@ -14,16 +14,26 @@ const home= () => (
          <SliderMain/>
       </section>
 
-      <section className='container no-top no-bottom'>
-        <FeatureBox/>
-      </section>
-
-      <section className='container no-bottom'>
+      <section className='container'>
+        
         <div className='row'>
           <div className='col-lg-12'>
             <div className='text-center'>
-              <h2>Hot Collections</h2>
-              <div className="small-border"></div>
+              <h1>Featured NFTs</h1>              
+            </div>
+          </div>
+          <div className='col-lg-12'>
+            <FeatureBox/>
+          </div>
+        </div>
+      </section>
+
+      <section className='container'>
+        <div className='row'>
+          <div className='col-lg-12'>
+            <div className='text-center'>
+              <h1>Hot Collections</h1>
+              {/* <div className="small-border"></div> */}
             </div>
           </div>
           <div className='col-lg-12'>
@@ -32,16 +42,18 @@ const home= () => (
         </div>
       </section>
 
-      <section className='container no-bottom'>
-        <div className='row'>
-          <div className='col-lg-12'>
-            <div className='text-center'>
-              <h2>New Items</h2>
-              <div className="small-border"></div>
+      <section className='homenewitems'>
+        <div className='container'>  
+          <div className='row'>
+            <div className='col-lg-12'>
+              <div className='text-center'>
+                <h1>New Items</h1>
+                {/* <div className="small-border"></div> */}
+              </div>
             </div>
-          </div>
-          <div className='col-lg-12'>
-            <CarouselNewRedux/>
+            <div className='col-lg-12'>
+              <CarouselNewRedux/>
+            </div>
           </div>
         </div>
       </section>
@@ -50,8 +62,8 @@ const home= () => (
         <div className='row'>
           <div className='col-lg-12'>
             <div className='text-center'>
-              <h2>Top Sellers</h2>
-              <div className="small-border"></div>
+              <h1>Top Sellers</h1>
+              {/* <div className="small-border"></div> */}
             </div>
           </div>
           <div className='col-lg-12'>
@@ -60,7 +72,7 @@ const home= () => (
         </div>
       </section>
 
-      <section className='container'>
+      {/* <section className='container'>
         <div className='row'>
           <div className='col-lg-12'>
             <div className='text-center'>
@@ -70,6 +82,38 @@ const home= () => (
           </div>
         </div>
         <Catgor/>
+      </section> */}
+      <section className='container'>
+        <div className='row'>
+          <div className='col-lg-12'>
+            <div className='text-center'>
+              <h1>Create and Sell Your NFTs</h1>
+              {/* <div className="small-border"></div> */}
+            </div>
+          </div>
+        </div>
+        <div className='row footerguidelist'>
+          <div className='col-md-3 col-sm-6 col-log-3 mb-3'>
+            <img src="./img/setwallet.png" class="lazy bottomlist" alt="" />
+            <h3>Set up your wallet</h3>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis.</p>
+          </div>
+          <div className='col-md-3 col-sm-6 col-log-3 mb-3'>
+            <img src="./img/createcollect.png" class="lazy bottomlist" alt="" />
+            <h3>Create your collection</h3>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis.</p>
+          </div>
+          <div className='col-md-3 col-sm-6 col-log-3 mb-3'>
+            <img src="./img/addnft.png" class="lazy bottomlist" alt="" />
+            <h3>Add your NFTs</h3>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis.</p>
+          </div>
+          <div className='col-md-3 col-sm-6 col-log-3 mb-3'>
+            <img src="./img/listnft.png" class="lazy bottomlist" alt="" />
+            <h3>List them for sale</h3>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis.</p>
+          </div>
+        </div>
       </section>
 
     <Footer />

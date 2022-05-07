@@ -20,7 +20,7 @@ const CarouselCollectionRedux = () => {
 }, [dispatch]);
 
   return (
-      <div className='nft'>
+      <div className='nft homepagecollection'>
         <Slider {...settings}>
           { hotCollections && hotCollections.map((item, index) => (
             <CustomSlide

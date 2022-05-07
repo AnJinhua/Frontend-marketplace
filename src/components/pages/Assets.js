@@ -130,7 +130,7 @@ return (
                     <img src={nft.image} className="rounded" />
                   </div>                  
                   <div className="nft__item_info">      
-                    <span onClick={() => navigateTo(`/ItemDetail/${nft.id}`)}>
+                    <span onClick={() => navigateTo(`/ItemDetail/${nft.tokenId}`)}>
                         <h4>Item {nft.tokenId}</h4>
                         <p>Item {nft.tokenId}</p>
                     </span>              

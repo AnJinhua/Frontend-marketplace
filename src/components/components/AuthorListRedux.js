@@ -16,7 +16,7 @@ const AuthorList = () => {
 
     return (
         <div>
-            <ol className="author_list">
+            <ol className="author_list firstpagetoplist">
             { authors && authors.map((author, index) => (
                 <li key={index}>
                     <UserTopSeller user={author} />

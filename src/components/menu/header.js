@@ -6,6 +6,7 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import auth, { authorWalletUrl, authorCreatorUrl } from '../../core/auth';
 import request from '../../core/auth/request';
 import { navigate } from '@reach/router';
+import api from "../../core/api";
 import { connectWallet, getCurrentWalletConnected, } from "../../core/nft/interact";
 
 
@@ -40,6 +41,7 @@ const Header = function({ className }) {
     const [walletAddress, setWallet] = useState("");
     const [authusername, setauthusername] = useState("");
     const [authuserid, setauthuserid] = useState("");
+    const [authuserimage, setauthuserimage] = useState("");
     const [status, setStatus] = useState("");
 
     const handleBtnClick = () => {
@@ -113,6 +115,7 @@ const Header = function({ className }) {
       setWallet(authUserinformation[0].wallet);
       setauthusername(authUserinformation[0].username)
       setauthuserid(authUserinformation[0].id)
+      setauthuserimage(authUserinformation[0].avatar.url)
     }    
     
     const scrollCallBack = window.addEventListener("scroll", () => {
@@ -186,6 +189,7 @@ const Header = function({ className }) {
             console.log(response);
             setauthusername(response[0].username)
             setauthuserid(response[0].id)
+            setauthuserimage(response[0].avatar.url)
           } else {
 
               const data = {username: authwalletaddress, social: '', wallet: authwalletaddress, followers: 0};
@@ -497,7 +501,7 @@ const Header = function({ className }) {
                 <div className="logout">
                   <NavLink to="/create2">Create</NavLink>
                   <div id="de-click-menu-notification" className="de-menu-notification" onClick={() => btn_icon_not(!shownot)} ref={refpopnot}>
-                      <div className="d-count">8</div>
+                      {/* <div className="d-count">8</div> */}
                       <i className="fa fa-bell"></i>
                       {shownot && 
                         <div className="popshow">
@@ -556,7 +560,7 @@ const Header = function({ className }) {
                         }
                   </div>
                   <div id="de-click-menu-profile" className="de-menu-profile" onClick={() => btn_icon_pop(!showpop)} ref={refpop}>                           
-                      <img src="../../img/author_single/author_thumbnail.jpg" alt=""/>
+                      <img src={(authuserimage) ? (api.baseUrl + authuserimage) : '../../img/author_single/author_thumbnail.jpg'} alt=""/>
                       {showpop && 
                         <div className="popshow">
                           <div className="d-name">

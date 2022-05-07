@@ -108,6 +108,8 @@ export default function CreateItem() {
     // let tokenId = value.toNumber()
 
     const price = ethers.utils.parseUnits(formInput.price, 'ether')    
+    const Itemname = formInput.name    
+    const description = formInput.description        
     /* then list the item for sale on the marketplace */
     const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)        
     
@@ -122,7 +124,7 @@ export default function CreateItem() {
 
     let transaction = null
     try {
-      transaction = await contract.createToken(url, price, { value: listingPrice })          
+      transaction = await contract.createToken(url, Itemname, description, "5", price, { value: listingPrice })          
     } catch (error) {          
       toast.error(error?.data?.message || 'Error while creating token')
     }
